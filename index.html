@@ -1,55 +1,65 @@
-
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷蔵庫レシピ提案AI</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
-.app{max-width:680px;padding:1.5rem 0}
-h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:1.5rem}
-.form-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem}
-.field{margin-bottom:1rem}
-.field label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;font-size:14px}
-.field textarea{height:60px;resize:none;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.submit-btn{width:100%;padding:10px;font-size:15px;font-weight:500;background:var(--color-text-primary);color:var(--color-background-primary);border:none;border-radius:var(--border-radius-md);cursor:pointer;margin-top:4px;transition:opacity 0.15s}
-.submit-btn:hover{opacity:0.85}
-.submit-btn:disabled{opacity:0.4;cursor:not-allowed}
-.loading{text-align:center;padding:2rem;color:var(--color-text-secondary);font-size:14px}
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--color-border-secondary);border-top-color:var(--color-text-primary);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+.header{background:#fff;border-bottom:1px solid #e8e8e0;padding:16px 20px;position:sticky;top:0;z-index:10}
+.header h1{font-size:17px;font-weight:600;color:#1a1a1a}
+.header p{font-size:12px;color:#888;margin-top:2px}
+.container{max-width:600px;margin:0 auto;padding:16px}
+.form-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #e8e8e0}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:500;color:#555;margin-bottom:6px}
+.field textarea{width:100%;font-size:15px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;resize:none;height:64px;font-family:inherit;background:#fafafa;color:#1a1a1a}
+.field textarea:focus{outline:none;border-color:#888;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field select{width:100%;font-size:15px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#fafafa;color:#1a1a1a;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.field select:focus{outline:none;border-color:#888;background-color:#fff}
+.btn{width:100%;padding:14px;font-size:16px;font-weight:600;background:#1a1a1a;color:#fff;border:none;border-radius:12px;cursor:pointer;margin-top:4px;transition:opacity 0.15s}
+.btn:hover{opacity:0.85}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.loading{text-align:center;padding:32px;color:#888;font-size:14px}
+.spinner{display:inline-block;width:22px;height:22px;border:2px solid #ddd;border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.recipes-section{margin-top:1.5rem}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.tab-bar{display:flex;gap:4px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:3px}
-.tab{padding:5px 14px;font-size:13px;border:none;background:transparent;border-radius:6px;cursor:pointer;color:var(--color-text-secondary);transition:all 0.15s}
-.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500;border:0.5px solid var(--color-border-tertiary)}
-.recipe-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
-.recipe-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:1rem}
-.recipe-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
-.recipe-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.badge{font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);white-space:nowrap}
-.badge-time{background:#E1F5EE;color:#0F6E56}
-.badge-cal{background:#FAEEDA;color:#854F0B}
-.badge-diff{background:#EEEDFE;color:#534AB7}
-.fav-btn{flex-shrink:0;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 10px;cursor:pointer;font-size:14px;transition:all 0.15s;color:var(--color-text-secondary)}
-.fav-btn.active{border-color:#E24B4A;color:#E24B4A;background:#FCEBEB}
-.recipe-section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:12px 0 6px;text-transform:none}
-.ingredients-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.ingredient-item{font-size:13px;color:var(--color-text-primary);padding:4px 8px;background:var(--color-background-secondary);border-radius:6px}
-.steps-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-.step-item{display:flex;gap:10px;font-size:13px;line-height:1.6}
-.step-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--color-text-primary);color:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;margin-top:2px}
-.step-text{color:var(--color-text-primary)}
-.empty-fav{text-align:center;padding:3rem;color:var(--color-text-tertiary);font-size:14px}
-.error-box{background:#FCEBEB;border:0.5px solid #F7C1C1;border-radius:var(--border-radius-md);padding:1rem;color:#A32D2D;font-size:13px;margin-top:1rem}
+.tab-bar{display:flex;background:#fff;border-radius:12px;padding:4px;border:1px solid #e8e8e0;margin-bottom:16px}
+.tab{flex:1;padding:8px;font-size:14px;font-weight:500;border:none;background:transparent;border-radius:9px;cursor:pointer;color:#888;transition:all 0.15s}
+.tab.active{background:#1a1a1a;color:#fff}
+.recipe-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;border:1px solid #e8e8e0}
+.recipe-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px}
+.recipe-title{font-size:17px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:500}
+.badge-time{background:#e8f5ee;color:#2d7a4f}
+.badge-cal{background:#fff3e0;color:#b35c00}
+.badge-diff{background:#ede8ff;color:#5b3db8}
+.fav-btn{flex-shrink:0;background:none;border:1px solid #ddd;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;color:#888;white-space:nowrap}
+.fav-btn.active{border-color:#e24b4a;color:#e24b4a;background:#fff0f0}
+.section-title{font-size:12px;font-weight:600;color:#888;margin:14px 0 8px;letter-spacing:0.05em;text-transform:uppercase}
+.ingredients-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ing-item{font-size:13px;color:#1a1a1a;padding:5px 10px;background:#f7f7f3;border-radius:8px;line-height:1.4}
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.step-item{display:flex;gap:10px;font-size:14px;line-height:1.6}
+.step-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px}
+.empty-fav{text-align:center;padding:48px 20px;color:#aaa;font-size:14px;line-height:1.8}
+.error-box{background:#fff0f0;border:1px solid #ffd0d0;border-radius:12px;padding:14px;color:#c0392b;font-size:13px;margin-top:12px;line-height:1.6}
+.results-section{margin-top:0}
 </style>
+</head>
+<body>
+<div class="header">
+  <h1>冷蔵庫レシピ提案AI</h1>
+  <p>食材を入れてレシピを提案してもらおう</p>
+</div>
 
-<h2 class="sr-only">冷蔵庫レシピ提案AI</h2>
-<div class="app">
-  <h2>冷蔵庫レシピ提案AI</h2>
-
+<div class="container">
   <div class="form-card">
     <div class="field">
       <label>食材（カンマ区切りで入力）</label>
-      <textarea id="ingredients" placeholder="例：鶏肉, 玉ねぎ, にんじん, じゃがいも, 醤油"></textarea>
+      <textarea id="ingredients" placeholder="例：鶏肉, 玉ねぎ, にんじん, じゃがいも"></textarea>
     </div>
     <div class="row">
       <div class="field">
@@ -69,21 +79,18 @@ h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:
         </select>
       </div>
     </div>
-    <button class="submit-btn" id="generateBtn" onclick="generateRecipes()">レシピを提案する</button>
+    <button class="btn" id="generateBtn" onclick="generateRecipes()">レシピを提案する</button>
+    <div id="errorArea" style="display:none" class="error-box"></div>
   </div>
 
   <div id="loadingArea" style="display:none" class="loading">
     <span class="spinner"></span>AIがレシピを考えています…
   </div>
-  <div id="errorArea" style="display:none" class="error-box"></div>
 
-  <div id="resultsArea" class="recipes-section" style="display:none">
-    <div class="section-header">
-      <span style="font-size:14px;font-weight:500;color:var(--color-text-primary)">提案レシピ</span>
-      <div class="tab-bar">
-        <button class="tab active" onclick="switchTab('results')">今回の提案</button>
-        <button class="tab" onclick="switchTab('favorites')" id="favTab">お気に入り (<span id="favCount">0</span>)</button>
-      </div>
+  <div id="resultsArea" style="display:none" class="results-section">
+    <div class="tab-bar">
+      <button class="tab active" id="tab-results" onclick="switchTab('results')">今回の提案</button>
+      <button class="tab" id="tab-favorites" onclick="switchTab('favorites')">お気に入り (<span id="favCount">0</span>)</button>
     </div>
     <div id="recipesContainer"></div>
     <div id="favoritesContainer" style="display:none"></div>
@@ -91,87 +98,87 @@ h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:
 </div>
 
 <script>
-let recipes=[];
-let favorites=JSON.parse(localStorage.getItem('rf_favorites')||'[]');
-let activeTab='results';
+const WORKER_URL = 'https://black-thunder-01d9.akemi-kuze.workers.dev';
+let recipes = [];
+let favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
+let activeTab = 'results';
 
-function switchTab(tab){
-  activeTab=tab;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('recipesContainer').style.display=tab==='results'?'block':'none';
-  document.getElementById('favoritesContainer').style.display=tab==='favorites'?'block':'none';
-  if(tab==='favorites')renderFavorites();
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-results').classList.toggle('active', tab === 'results');
+  document.getElementById('tab-favorites').classList.toggle('active', tab === 'favorites');
+  document.getElementById('recipesContainer').style.display = tab === 'results' ? 'block' : 'none';
+  document.getElementById('favoritesContainer').style.display = tab === 'favorites' ? 'block' : 'none';
+  if (tab === 'favorites') renderFavorites();
 }
 
-function toggleFavorite(idx,isFav){
-  const recipe=isFav?favorites[idx]:recipes[idx];
-  if(isFav){
-    favorites.splice(idx,1);
+function toggleFavorite(idx, isFav) {
+  const recipe = isFav ? favorites[idx] : recipes[idx];
+  if (isFav) {
+    favorites.splice(idx, 1);
   } else {
-    const already=favorites.some(f=>f.name===recipe.name);
-    if(!already)favorites.push(recipe);
+    if (!favorites.some(f => f.name === recipe.name)) favorites.push(recipe);
   }
-  localStorage.setItem('rf_favorites',JSON.stringify(favorites));
+  localStorage.setItem('rf_favorites', JSON.stringify(favorites));
   updateFavCount();
-  if(isFav)renderFavorites();
+  if (isFav) renderFavorites();
   else renderRecipes();
 }
 
-function updateFavCount(){
-  document.getElementById('favCount').textContent=favorites.length;
+function updateFavCount() {
+  document.getElementById('favCount').textContent = favorites.length;
 }
 
-function renderCard(recipe,idx,isFav){
-  const isSaved=isFav||favorites.some(f=>f.name===recipe.name);
-  const ings=(recipe.ingredients||[]).map(i=>`<div class="ingredient-item">${i}</div>`).join('');
-  const steps=(recipe.steps||[]).map((s,i)=>`<li class="step-item"><span class="step-num">${i+1}</span><span class="step-text">${s}</span></li>`).join('');
+function renderCard(recipe, idx, isFav) {
+  const isSaved = isFav || favorites.some(f => f.name === recipe.name);
+  const ings = (recipe.ingredients || []).map(i => `<div class="ing-item">${i}</div>`).join('');
+  const steps = (recipe.steps || []).map((s, i) => `<li class="step-item"><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('');
   return `<div class="recipe-card">
     <div class="recipe-header">
       <div>
-        <div class="recipe-title">${recipe.name||'レシピ'}</div>
-        <div class="recipe-meta">
-          <span class="badge badge-time">${recipe.time||''}</span>
-          <span class="badge badge-cal">${recipe.calories||''}</span>
-          <span class="badge badge-diff">${recipe.difficulty||''}</span>
+        <div class="recipe-title">${recipe.name || 'レシピ'}</div>
+        <div class="badges">
+          <span class="badge badge-time">${recipe.time || ''}</span>
+          <span class="badge badge-cal">${recipe.calories || ''}</span>
+          <span class="badge badge-diff">${recipe.difficulty || ''}</span>
         </div>
       </div>
-      <button class="fav-btn ${isSaved?'active':''}" onclick="toggleFavorite(${idx},${isFav})">
-        ${isSaved?'♥ 保存済み':'♡ お気に入り'}
+      <button class="fav-btn ${isSaved ? 'active' : ''}" onclick="toggleFavorite(${idx},${isFav})">
+        ${isSaved ? '♥ 保存済み' : '♡ お気に入り'}
       </button>
     </div>
-    <div class="recipe-section-title">材料</div>
+    <div class="section-title">材料</div>
     <div class="ingredients-grid">${ings}</div>
-    <div class="recipe-section-title">作り方</div>
+    <div class="section-title">作り方</div>
     <ol class="steps-list">${steps}</ol>
   </div>`;
 }
 
-function renderRecipes(){
-  document.getElementById('recipesContainer').innerHTML=recipes.map((r,i)=>renderCard(r,i,false)).join('');
+function renderRecipes() {
+  document.getElementById('recipesContainer').innerHTML = recipes.map((r, i) => renderCard(r, i, false)).join('');
 }
 
-function renderFavorites(){
-  const c=document.getElementById('favoritesContainer');
-  if(favorites.length===0){
-    c.innerHTML='<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。</div>';
+function renderFavorites() {
+  const c = document.getElementById('favoritesContainer');
+  if (favorites.length === 0) {
+    c.innerHTML = '<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。<br><br>保存したレシピはこの端末に記録されます。</div>';
   } else {
-    c.innerHTML=favorites.map((r,i)=>renderCard(r,i,true)).join('');
+    c.innerHTML = favorites.map((r, i) => renderCard(r, i, true)).join('');
   }
 }
 
-async function generateRecipes(){
-  const ing=document.getElementById('ingredients').value.trim();
-  if(!ing){alert('食材を入力してください');return;}
-  const time=document.getElementById('time').value;
-  const diff=document.getElementById('difficulty').value;
+async function generateRecipes() {
+  const ing = document.getElementById('ingredients').value.trim();
+  if (!ing) { alert('食材を入力してください'); return; }
+  const time = document.getElementById('time').value;
+  const diff = document.getElementById('difficulty').value;
 
-  document.getElementById('generateBtn').disabled=true;
-  document.getElementById('loadingArea').style.display='block';
-  document.getElementById('errorArea').style.display='none';
-  document.getElementById('resultsArea').style.display='none';
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('loadingArea').style.display = 'block';
+  document.getElementById('errorArea').style.display = 'none';
+  document.getElementById('resultsArea').style.display = 'none';
 
-  const prompt=`あなたは料理の専門家です。以下の食材と条件でレシピを3案考えてください。
+  const prompt = `あなたは料理の専門家です。以下の食材と条件でレシピを3案考えてください。
 
 食材：${ing}
 調理時間：${time}以内
@@ -190,37 +197,42 @@ async function generateRecipes(){
 ]`;
 
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        messages:[{role:'user',content:prompt}]
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
       })
     });
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.error?.message||'APIエラー');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'APIエラー');
 
-    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-    const jsonMatch=text.match(/\[[\s\S]*\]/);
-    if(!jsonMatch)throw new Error('レスポンスの解析に失敗しました');
-    recipes=JSON.parse(jsonMatch[0]);
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('レスポンスの解析に失敗しました');
+    recipes = JSON.parse(jsonMatch[0]);
 
     renderRecipes();
     updateFavCount();
-    document.getElementById('resultsArea').style.display='block';
-    if(activeTab==='favorites'){
-      document.getElementById('recipesContainer').style.display='none';
-      document.getElementById('favoritesContainer').style.display='block';
-    }
-  } catch(e){
-    document.getElementById('errorArea').textContent='エラー：'+e.message;
-    document.getElementById('errorArea').style.display='block';
+    document.getElementById('resultsArea').style.display = 'block';
+    activeTab = 'results';
+    document.getElementById('tab-results').classList.add('active');
+    document.getElementById('tab-favorites').classList.remove('active');
+    document.getElementById('recipesContainer').style.display = 'block';
+    document.getElementById('favoritesContainer').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {
+    document.getElementById('errorArea').textContent = 'エラー：' + e.message;
+    document.getElementById('errorArea').style.display = 'block';
   } finally {
-    document.getElementById('loadingArea').style.display='none';
-    document.getElementById('generateBtn').disabled=false;
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('generateBtn').disabled = false;
   }
 }
+
 updateFavCount();
 </script>
+</body>
+</html>
