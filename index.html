@@ -105,6 +105,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </select>
         </div>
       </div>
+      <div class="field">
+        <label>ジャンル</label>
+        <select id="genre">
+          <option value="おまかせ">🍽️ おまかせ（和・洋・中バランスよく）</option>
+          <option value="和食">🍱 和食</option>
+          <option value="洋食">🍝 洋食</option>
+          <option value="中華">🥢 中華</option>
+          <option value="デザート">🍮 デザート</option>
+        </select>
+      </div>
       <button class="btn" id="generateBtn" onclick="generateRecipes()">レシピを提案する</button>
       <div id="errorArea" style="display:none" class="error-box"></div>
     </div>
@@ -131,6 +141,7 @@ const GENRES = [
   { key:'和食', icon:'🍱', keywords:['丼','煮','和','焼き','味噌','出汁','だし','醤油','みりん','和え','おひたし','汁','うどん','そば','おにぎり','天','親子','肉じゃが','筑前','きんぴら','茶碗','雑炊','炊き込み','卵とじ','鍋'] },
   { key:'洋食', icon:'🍝', keywords:['パスタ','グラタン','シチュー','ハンバーグ','オムレツ','オムライス','ピザ','スープ','サラダ','ソテー','ムニエル','ロール','コロッケ','フライ','カルボナーラ','リゾット','フレンチトースト','クリーム','ポタージュ','ミルク'] },
   { key:'中華', icon:'🥢', keywords:['炒め','チャーハン','餃子','麻婆','ラーメン','春巻','八宝','回鍋','青椒','酢豚','エビチリ','担々','チンジャオ','中華','炒飯'] },
+  { key:'デザート', icon:'🍮', keywords:['プリン','ケーキ','クッキー','アイス','ゼリー','ムース','タルト','マフィン','パンケーキ','スイーツ','デザート','チョコ','クリーム煮','ホットケーキ','シフォン','ブラウニー','カスタード','ミルクプリン'] },
   { key:'その他', icon:'🌏', keywords:[] },
 ];
 
@@ -310,22 +321,37 @@ async function generateRecipes() {
   if (!ing) { alert('食材を入力してください'); return; }
   const time = document.getElementById('time').value;
   const diff = document.getElementById('difficulty').value;
+  const genre = document.getElementById('genre').value;
 
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('loadingArea').style.display = 'block';
   document.getElementById('errorArea').style.display = 'none';
   document.getElementById('recipesContainer').innerHTML = '';
 
+  const isOmakase = genre === 'おまかせ';
+  const isDesert = genre === 'デザート';
+  const genreInstruction = isOmakase
+    ? '和食・洋食・中華など異なるジャンルになるようにばらけさせること。'
+    : isDesert
+    ? 'すべてデザート・スイーツにすること。'
+    : `すべて${genre}にすること。`;
+  const bonusGenreInstruction = isOmakase
+    ? 'こちらもジャンルが重ならないようにすること。'
+    : isDesert
+    ? 'こちらもデザート・スイーツにすること。'
+    : `こちらも${genre}にすること。`;
+
   const prompt = `あなたは料理の専門家です。以下の食材と条件でレシピを提案してください。
 
 食材：${ing}
 調理時間：${time}以内
 難易度：${diff}
+ジャンル：${genre}
 
 以下の2種類を必ず両方出力してください。
 
-【recipes】今ある食材だけで作れるレシピを必ず3案。和食・洋食・中華など異なるジャンルになるようにばらけさせること。
-【bonusRecipes】1〜2品だけ買い足せば作れるレシピを必ず2案。buyには買い足す食材名を必ず1つ以上入れること。こちらもジャンルが重ならないようにすること。
+【recipes】今ある食材だけで作れるレシピを必ず3案。${genreInstruction}
+【bonusRecipes】1〜2品だけ買い足せば作れるレシピを必ず2案。buyには買い足す食材名を必ず1つ以上入れること。${bonusGenreInstruction}
 
 必ず以下のJSON形式のみで回答してください。前置きや説明は不要です。recipesに3件、bonusRecipesに2件、合計5件必ず含めること。
 {
