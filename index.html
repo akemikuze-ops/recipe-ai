@@ -51,6 +51,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bonus-header::before,.bonus-header::after{content:'';flex:1;height:1px;background:#e8e8e0}
 .recipe-card.bonus{border-color:#d4e8ff;background:#fafcff}
 .badge-buy{background:#dceeff;color:#1a5fa8}
+.io-bar{display:flex;gap:8px;margin-bottom:12px}
+.io-btn{flex:1;padding:9px;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;transition:all 0.15s}
+.io-btn:hover{background:#f5f5f0}
+.io-btn.export{border-color:#2d7a4f;color:#2d7a4f}
+.io-btn.import{border-color:#5b3db8;color:#5b3db8}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -100,6 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="favoritesContainer" style="display:none"></div>
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
 const WORKER_URL = 'https://black-thunder-01d9.akemi-kuze.workers.dev';
@@ -172,12 +180,65 @@ function renderRecipes() {
   document.getElementById('recipesContainer').innerHTML = html;
 }
 
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function exportFavorites() {
+  if (favorites.length === 0) { showToast('お気に入りがありません'); return; }
+  const blob = new Blob([JSON.stringify(favorites, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'recipe_favorites.json';
+  a.click();
+  showToast('エクスポートしました');
+}
+
+function importFavorites() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (!Array.isArray(imported)) throw new Error();
+        let added = 0;
+        imported.forEach(r => {
+          if (r.name && !favorites.some(f => f.name === r.name)) {
+            favorites.push(r);
+            added++;
+          }
+        });
+        localStorage.setItem('rf_favorites', JSON.stringify(favorites));
+        updateFavCount();
+        renderFavorites();
+        showToast(`${added}件追加しました`);
+      } catch {
+        showToast('ファイルが正しくありません');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 function renderFavorites() {
   const c = document.getElementById('favoritesContainer');
+  const ioBar = `<div class="io-bar">
+    <button class="io-btn export" onclick="exportFavorites()">⬇ エクスポート</button>
+    <button class="io-btn import" onclick="importFavorites()">⬆ インポート</button>
+  </div>`;
   if (favorites.length === 0) {
-    c.innerHTML = '<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。<br><br>保存したレシピはこの端末に記録されます。</div>';
+    c.innerHTML = ioBar + '<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。<br><br>保存したレシピはこの端末に記録されます。</div>';
   } else {
-    c.innerHTML = favorites.map((r, i) => renderCard(r, i, true)).join('');
+    c.innerHTML = ioBar + favorites.map((r, i) => renderCard(r, i, true)).join('');
   }
 }
 
