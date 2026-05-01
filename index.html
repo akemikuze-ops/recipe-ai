@@ -7,10 +7,13 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
-.header{background:#fff;border-bottom:1px solid #e8e8e0;padding:16px 20px;position:sticky;top:0;z-index:10}
-.header h1{font-size:17px;font-weight:600;color:#1a1a1a}
+.header{background:#fff;border-bottom:1px solid #e8e8e0;padding:14px 20px;position:sticky;top:0;z-index:10}
+.header h1{font-size:17px;font-weight:600}
 .header p{font-size:12px;color:#888;margin-top:2px}
 .container{max-width:600px;margin:0 auto;padding:16px}
+.tab-bar{display:flex;background:#fff;border-radius:12px;padding:4px;border:1px solid #e8e8e0;margin-bottom:16px}
+.tab{flex:1;padding:9px;font-size:14px;font-weight:500;border:none;background:transparent;border-radius:9px;cursor:pointer;color:#888;transition:all 0.15s}
+.tab.active{background:#1a1a1a;color:#fff}
 .form-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #e8e8e0}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:13px;font-weight:500;color:#555;margin-bottom:6px}
@@ -25,37 +28,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .loading{text-align:center;padding:32px;color:#888;font-size:14px}
 .spinner{display:inline-block;width:22px;height:22px;border:2px solid #ddd;border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.tab-bar{display:flex;background:#fff;border-radius:12px;padding:4px;border:1px solid #e8e8e0;margin-bottom:16px}
-.tab{flex:1;padding:8px;font-size:14px;font-weight:500;border:none;background:transparent;border-radius:9px;cursor:pointer;color:#888;transition:all 0.15s}
-.tab.active{background:#1a1a1a;color:#fff}
 .recipe-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;border:1px solid #e8e8e0}
+.recipe-card.bonus{border-color:#d4e8ff;background:#fafcff}
 .recipe-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px}
-.recipe-title{font-size:17px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.recipe-title{font-size:17px;font-weight:600;line-height:1.3}
 .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .badge{font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:500}
 .badge-time{background:#e8f5ee;color:#2d7a4f}
 .badge-cal{background:#fff3e0;color:#b35c00}
 .badge-diff{background:#ede8ff;color:#5b3db8}
+.badge-buy{background:#dceeff;color:#1a5fa8}
 .fav-btn{flex-shrink:0;background:none;border:1px solid #ddd;border-radius:20px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;color:#888;white-space:nowrap}
 .fav-btn.active{border-color:#e24b4a;color:#e24b4a;background:#fff0f0}
-.section-title{font-size:12px;font-weight:600;color:#888;margin:14px 0 8px;letter-spacing:0.05em;text-transform:uppercase}
+.section-title{font-size:12px;font-weight:600;color:#888;margin:14px 0 8px;letter-spacing:0.05em}
 .ingredients-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .ing-item{font-size:13px;color:#1a1a1a;padding:5px 10px;background:#f7f7f3;border-radius:8px;line-height:1.4}
 .steps-list{list-style:none;display:flex;flex-direction:column;gap:10px}
 .step-item{display:flex;gap:10px;font-size:14px;line-height:1.6}
 .step-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px}
-.empty-fav{text-align:center;padding:48px 20px;color:#aaa;font-size:14px;line-height:1.8}
-.error-box{background:#fff0f0;border:1px solid #ffd0d0;border-radius:12px;padding:14px;color:#c0392b;font-size:13px;margin-top:12px;line-height:1.6}
-.results-section{margin-top:0}
 .bonus-header{display:flex;align-items:center;gap:8px;margin:20px 0 12px;font-size:13px;font-weight:600;color:#888}
 .bonus-header::before,.bonus-header::after{content:'';flex:1;height:1px;background:#e8e8e0}
-.recipe-card.bonus{border-color:#d4e8ff;background:#fafcff}
-.badge-buy{background:#dceeff;color:#1a5fa8}
-.io-bar{display:flex;gap:8px;margin-bottom:12px}
+.genre-section{margin-bottom:4px;background:#fff;border-radius:14px;border:1px solid #e8e8e0;overflow:hidden;margin-bottom:10px}
+.genre-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+.genre-icon{font-size:18px}
+.genre-label{font-size:15px;font-weight:600;flex:1}
+.genre-count{font-size:12px;color:#aaa;background:#f5f5f0;padding:2px 8px;border-radius:10px}
+.genre-chevron{font-size:11px;color:#aaa;transition:transform 0.2s}
+.genre-chevron.open{transform:rotate(180deg)}
+.genre-body{display:none;padding:0 12px 12px}
+.genre-body.open{display:block}
+.io-bar{display:flex;gap:8px;margin-bottom:16px}
 .io-btn{flex:1;padding:9px;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;transition:all 0.15s}
 .io-btn:hover{background:#f5f5f0}
 .io-btn.export{border-color:#2d7a4f;color:#2d7a4f}
 .io-btn.import{border-color:#5b3db8;color:#5b3db8}
+.empty-fav{text-align:center;padding:48px 20px;color:#aaa;font-size:14px;line-height:1.8}
+.error-box{background:#fff0f0;border:1px solid #ffd0d0;border-radius:12px;padding:14px;color:#c0392b;font-size:13px;margin-top:12px;line-height:1.6}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1}
 </style>
@@ -67,44 +75,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="container">
-  <div class="form-card">
-    <div class="field">
-      <label>食材（カンマ区切りで入力）</label>
-      <textarea id="ingredients" placeholder="例：鶏肉, 玉ねぎ, にんじん, じゃがいも"></textarea>
-    </div>
-    <div class="row">
-      <div class="field">
-        <label>調理時間</label>
-        <select id="time">
-          <option value="15分">15分以内</option>
-          <option value="30分" selected>30分以内</option>
-          <option value="1時間">1時間以内</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>難易度</label>
-        <select id="difficulty">
-          <option value="簡単">簡単</option>
-          <option value="普通" selected>普通</option>
-          <option value="本格的">本格的</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn" id="generateBtn" onclick="generateRecipes()">レシピを提案する</button>
-    <div id="errorArea" style="display:none" class="error-box"></div>
+  <div class="tab-bar">
+    <button class="tab active" id="tab-results" onclick="switchTab('results')">今回の提案</button>
+    <button class="tab" id="tab-favorites" onclick="switchTab('favorites')">お気に入り (<span id="favCount">0</span>)</button>
   </div>
 
-  <div id="loadingArea" style="display:none" class="loading">
-    <span class="spinner"></span>AIがレシピを考えています…
-  </div>
-
-  <div id="resultsArea" style="display:none" class="results-section">
-    <div class="tab-bar">
-      <button class="tab active" id="tab-results" onclick="switchTab('results')">今回の提案</button>
-      <button class="tab" id="tab-favorites" onclick="switchTab('favorites')">お気に入り (<span id="favCount">0</span>)</button>
+  <!-- 今回の提案 -->
+  <div id="panelResults">
+    <div class="form-card">
+      <div class="field">
+        <label>食材（カンマ区切りで入力）</label>
+        <textarea id="ingredients" placeholder="例：鶏肉, 玉ねぎ, にんじん, じゃがいも"></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>調理時間</label>
+          <select id="time">
+            <option value="15分">15分以内</option>
+            <option value="30分" selected>30分以内</option>
+            <option value="1時間">1時間以内</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>難易度</label>
+          <select id="difficulty">
+            <option value="簡単">簡単</option>
+            <option value="普通" selected>普通</option>
+            <option value="本格的">本格的</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" id="generateBtn" onclick="generateRecipes()">レシピを提案する</button>
+      <div id="errorArea" style="display:none" class="error-box"></div>
+    </div>
+    <div id="loadingArea" style="display:none" class="loading">
+      <span class="spinner"></span>AIがレシピを考えています…
     </div>
     <div id="recipesContainer"></div>
-    <div id="favoritesContainer" style="display:none"></div>
+  </div>
+
+  <!-- お気に入り -->
+  <div id="panelFavorites" style="display:none">
+    <div id="favoritesContainer"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -115,12 +127,26 @@ let recipes = [];
 let favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
 let activeTab = 'results';
 
+const GENRES = [
+  { key:'和食', icon:'🍱', keywords:['丼','煮','和','焼き','味噌','出汁','だし','醤油','みりん','和え','おひたし','汁','うどん','そば','おにぎり','天','親子','肉じゃが','筑前','きんぴら','茶碗','雑炊','炊き込み','卵とじ','鍋'] },
+  { key:'洋食', icon:'🍝', keywords:['パスタ','グラタン','シチュー','ハンバーグ','オムレツ','オムライス','ピザ','スープ','サラダ','ソテー','ムニエル','ロール','コロッケ','フライ','カルボナーラ','リゾット','フレンチトースト','クリーム','ポタージュ','ミルク'] },
+  { key:'中華', icon:'🥢', keywords:['炒め','チャーハン','餃子','麻婆','ラーメン','春巻','八宝','回鍋','青椒','酢豚','エビチリ','担々','チンジャオ','中華','炒飯'] },
+  { key:'その他', icon:'🌏', keywords:[] },
+];
+
+function detectGenre(name) {
+  for (const g of GENRES.slice(0, -1)) {
+    if (g.keywords.some(k => name.includes(k))) return g.key;
+  }
+  return 'その他';
+}
+
 function switchTab(tab) {
   activeTab = tab;
   document.getElementById('tab-results').classList.toggle('active', tab === 'results');
   document.getElementById('tab-favorites').classList.toggle('active', tab === 'favorites');
-  document.getElementById('recipesContainer').style.display = tab === 'results' ? 'block' : 'none';
-  document.getElementById('favoritesContainer').style.display = tab === 'favorites' ? 'block' : 'none';
+  document.getElementById('panelResults').style.display = tab === 'results' ? 'block' : 'none';
+  document.getElementById('panelFavorites').style.display = tab === 'favorites' ? 'block' : 'none';
   if (tab === 'favorites') renderFavorites();
 }
 
@@ -129,7 +155,10 @@ function toggleFavorite(idx, isFav) {
   if (isFav) {
     favorites.splice(idx, 1);
   } else {
-    if (!favorites.some(f => f.name === recipe.name)) favorites.push(recipe);
+    if (!favorites.some(f => f.name === recipe.name)) {
+      recipe.genre = detectGenre(recipe.name);
+      favorites.push(recipe);
+    }
   }
   localStorage.setItem('rf_favorites', JSON.stringify(favorites));
   updateFavCount();
@@ -212,6 +241,7 @@ function importFavorites() {
         let added = 0;
         imported.forEach(r => {
           if (r.name && !favorites.some(f => f.name === r.name)) {
+            if (!r.genre) r.genre = detectGenre(r.name);
             favorites.push(r);
             added++;
           }
@@ -229,17 +259,50 @@ function importFavorites() {
   input.click();
 }
 
+function toggleGenre(key) {
+  const body = document.getElementById('gb-' + key);
+  const chev = document.getElementById('gc-' + key);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
 function renderFavorites() {
   const c = document.getElementById('favoritesContainer');
   const ioBar = `<div class="io-bar">
     <button class="io-btn export" onclick="exportFavorites()">⬇ エクスポート</button>
     <button class="io-btn import" onclick="importFavorites()">⬆ インポート</button>
   </div>`;
+
   if (favorites.length === 0) {
-    c.innerHTML = ioBar + '<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。<br><br>保存したレシピはこの端末に記録されます。</div>';
-  } else {
-    c.innerHTML = ioBar + favorites.map((r, i) => renderCard(r, i, true)).join('');
+    c.innerHTML = ioBar + '<div class="empty-fav">お気に入りのレシピはまだありません。<br>レシピカードの ♡ ボタンで保存できます。</div>';
+    return;
   }
+
+  const grouped = {};
+  GENRES.forEach(g => grouped[g.key] = []);
+  favorites.forEach((r, i) => {
+    const genre = r.genre || detectGenre(r.name);
+    grouped[genre].push({ recipe: r, idx: i });
+  });
+
+  let html = ioBar;
+  GENRES.forEach(g => {
+    const items = grouped[g.key];
+    if (items.length === 0) return;
+    html += `<div class="genre-section">
+      <div class="genre-header" onclick="toggleGenre('${g.key}')">
+        <span class="genre-icon">${g.icon}</span>
+        <span class="genre-label">${g.key}</span>
+        <span class="genre-count">${items.length}件</span>
+        <span class="genre-chevron open" id="gc-${g.key}">▼</span>
+      </div>
+      <div class="genre-body open" id="gb-${g.key}">
+        ${items.map(({recipe, idx}) => renderCard(recipe, idx, true)).join('')}
+      </div>
+    </div>`;
+  });
+
+  c.innerHTML = html;
 }
 
 async function generateRecipes() {
@@ -251,7 +314,7 @@ async function generateRecipes() {
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('loadingArea').style.display = 'block';
   document.getElementById('errorArea').style.display = 'none';
-  document.getElementById('resultsArea').style.display = 'none';
+  document.getElementById('recipesContainer').innerHTML = '';
 
   const prompt = `あなたは料理の専門家です。以下の食材と条件でレシピを提案してください。
 
@@ -313,12 +376,7 @@ async function generateRecipes() {
 
     renderRecipes();
     updateFavCount();
-    document.getElementById('resultsArea').style.display = 'block';
-    activeTab = 'results';
-    document.getElementById('tab-results').classList.add('active');
-    document.getElementById('tab-favorites').classList.remove('active');
-    document.getElementById('recipesContainer').style.display = 'block';
-    document.getElementById('favoritesContainer').style.display = 'none';
+    switchTab('results');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch(e) {
     document.getElementById('errorArea').textContent = 'エラー：' + e.message;
