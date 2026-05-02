@@ -139,7 +139,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 const WORKER_URL = 'https://black-thunder-01d9.akemi-kuze.workers.dev';
 let recipes = [];
-let favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
+let favorites = [];
+
+async function loadFavorites() {
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'X-Action': 'get-favorites' }
+    });
+    favorites = await res.json();
+  } catch(e) {
+    favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
+  }
+  loadFavorites();
+  if (activeTab === 'favorites') renderFavorites();
+}
+
+async function saveFavorites() {
+  try {
+    await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Action': 'save-favorites' },
+      body: JSON.stringify(favorites)
+    });
+  } catch(e) {
+    localStorage.setItem('rf_favorites', JSON.stringify(favorites));
+  }
+}
 let activeTab = 'results';
 
 const GENRES = [
@@ -176,8 +202,8 @@ function toggleFavorite(idx, isFav) {
       favorites.push(recipe);
     }
   }
-  localStorage.setItem('rf_favorites', JSON.stringify(favorites));
-  updateFavCount();
+  saveFavorites();
+  loadFavorites();
   if (isFav) renderFavorites();
   else renderRecipes();
 }
@@ -232,7 +258,7 @@ function renderRecipes() {
 
 function saveMemo(idx, value) {
   favorites[idx].memo = value;
-  localStorage.setItem('rf_favorites', JSON.stringify(favorites));
+  saveFavorites();
   const el = document.getElementById('memo-saved-' + idx);
   if (el) { el.textContent = '保存しました'; setTimeout(() => { el.textContent = ''; }, 1500); }
 }
@@ -274,8 +300,8 @@ function importFavorites() {
             added++;
           }
         });
-        localStorage.setItem('rf_favorites', JSON.stringify(favorites));
-        updateFavCount();
+        saveFavorites();
+        loadFavorites();
         renderFavorites();
         showToast(`${added}件追加しました`);
       } catch {
@@ -419,7 +445,7 @@ ${isDesert ? "※塩・砂糖・はちみつ・バター・片栗粉・小麦粉
     recipes = [...(parsed.recipes || []), ...(parsed.bonusRecipes || [])];
 
     renderRecipes();
-    updateFavCount();
+    loadFavorites();
     switchTab('results');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch(e) {
@@ -431,7 +457,7 @@ ${isDesert ? "※塩・砂糖・はちみつ・バター・片栗粉・小麦粉
   }
 }
 
-updateFavCount();
+loadFavorites();
 </script>
 </body>
 </html>
