@@ -149,12 +149,9 @@ async function loadFavorites() {
       headers: { 'Content-Type': 'application/json', 'X-Action': 'get-favorites' }
     });
     favorites = await res.json();
-    console.log('KV取得成功:', favorites.length, '件');
   } catch(e) {
-    console.log('KV取得失敗、localStorageから読込:', e);
     favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
   }
-  console.log('updateFavCount前 favorites.length:', favorites.length);
   updateFavCount();
   if (activeTab === 'favorites') renderFavorites();
 }
