@@ -140,6 +140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 const WORKER_URL = 'https://black-thunder-01d9.akemi-kuze.workers.dev';
 let recipes = [];
 let favorites = [];
+let activeTab = 'results';
 
 async function loadFavorites() {
   try {
@@ -151,7 +152,7 @@ async function loadFavorites() {
   } catch(e) {
     favorites = JSON.parse(localStorage.getItem('rf_favorites') || '[]');
   }
-  loadFavorites();
+  updateFavCount();
   if (activeTab === 'favorites') renderFavorites();
 }
 
@@ -166,8 +167,6 @@ async function saveFavorites() {
     localStorage.setItem('rf_favorites', JSON.stringify(favorites));
   }
 }
-let activeTab = 'results';
-
 const GENRES = [
   { key:'和食', icon:'🍱', keywords:['丼','煮','和','焼き','味噌','出汁','だし','醤油','みりん','和え','おひたし','汁','うどん','そば','おにぎり','天','親子','肉じゃが','筑前','きんぴら','茶碗','雑炊','炊き込み','卵とじ','鍋'] },
   { key:'洋食', icon:'🍝', keywords:['パスタ','グラタン','シチュー','ハンバーグ','オムレツ','オムライス','ピザ','スープ','サラダ','ソテー','ムニエル','ロール','コロッケ','フライ','カルボナーラ','リゾット','フレンチトースト','クリーム','ポタージュ','ミルク'] },
